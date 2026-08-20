@@ -3,11 +3,11 @@
 
 export const EVENT = {
   name: 'Essence Vorfest',
-  tagline: 'O Aquece Oficial da Oktoberfest',
-  venue: 'Restaurante Essence',
+  tagline: 'O Aquece da Oktoberfest',
+  venue: 'Essence Restaurante e Eventos',
   date: 'Sábado, 26 de Setembro de 2026',
   time: 'A partir das 20h',
-  location: 'Restaurante Essence — Evento Indoor',
+  location: 'Essence Restaurante e Eventos (indoor)',
   totalTickets: 200,
   ticketPrice: 1,
   maxPerOrder: 10,

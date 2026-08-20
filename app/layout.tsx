@@ -16,9 +16,9 @@ const oswald = Oswald({
 })
 
 export const metadata: Metadata = {
-  title: 'Essence Vorfest | O Aquece Oficial da Oktoberfest',
+  title: 'Essence Vorfest | O Aquece da Oktoberfest',
   description:
-    'Essence Vorfest no Restaurante Essence: bandas típicas alemãs, cuca com linguiça, chopp Hellen gelado e espumante. Vagas limitadas — apenas 200 ingressos.',
+    'Essence Vorfest no Essence: bandas típicas alemãs, open food com a tradicional gastronomia alemã e open bar com espumante e chopp Hellen liberados. Vagas limitadas — apenas 200 ingressos.',
   generator: 'v0.app',
   icons: {
     icon: [

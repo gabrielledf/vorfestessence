@@ -37,7 +37,7 @@ const AUTH_DIR = process.env.AUTH_DIR || './auth_state'
 
 const EVENT = {
   name: process.env.EVENT_NAME || 'Essence Vorfest',
-  venue: process.env.EVENT_VENUE || 'Restaurante Essence',
+  venue: process.env.EVENT_VENUE || 'Essence Restaurante e Eventos',
   date: process.env.EVENT_DATE || 'Sábado, 26 de Setembro de 2026',
 }
 
@@ -69,7 +69,7 @@ function buildVoucherMessage({ name, quantity, amount, txid }) {
     `*PAGAMENTO CONFIRMADO!* \u{1F37B}\n\n` +
     `Olá, ${firstName}! Seu pagamento foi aprovado e seu ingresso está garantido.\n\n` +
     `*${EVENT.name}*\n` +
-    `_O Aquece Oficial da Oktoberfest_\n\n` +
+    `_O Aquece da Oktoberfest_\n\n` +
     `----------------------------------\n` +
     `*VOUCHER DE INGRESSO*\n` +
     `Nome: ${name}\n` +

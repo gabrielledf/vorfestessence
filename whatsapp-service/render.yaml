@@ -22,7 +22,7 @@ services:
       - key: EVENT_NAME
         value: Essence Vorfest
       - key: EVENT_VENUE
-        value: Restaurante Essence
+        value: Essence Restaurante e Eventos
       - key: EVENT_DATE
         value: Sábado, 27 de Setembro de 2026
       - key: AUTH_DIR

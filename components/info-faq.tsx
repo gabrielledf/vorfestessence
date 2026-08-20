@@ -25,7 +25,7 @@ const FAQ = [
   },
   {
     q: 'Onde e quando retiro a pulseira?',
-    a: 'A pulseira pode ser retirada nos pontos oficiais ou na entrada do Restaurante Essence no dia do evento, apresentando o voucher recebido no WhatsApp junto com um documento com foto. Pontos oficiais para retirada de pulseiras: Essence Restaurante, Santa Fé Restaurante, Agafarma Catedral e Hellen Choperia',
+    a: 'A pulseira pode ser retirada nos pontos oficiais ou na entrada do Essence no dia do evento, apresentando o voucher recebido no WhatsApp junto com um documento com foto. Pontos oficiais para retirada de pulseiras: Essence Restaurante, Santa Fé Restaurante, Agafarma Catedral e Hellen Choperia',
   },
    {
     q: 'Posso comprar mais de um ingresso?',

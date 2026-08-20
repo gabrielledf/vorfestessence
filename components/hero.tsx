@@ -8,7 +8,7 @@ export function Hero() {
       <div className="absolute inset-0">
         <img
           src="/hero-vorfest.png"
-          alt="Ambiente da Oktoberfest indoor no Restaurante Essence com chopp gelado e luzes douradas"
+          alt="Ambiente da Oktoberfest indoor no Essence Restaurante e Eventos com chopp gelado e luzes douradas"
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/80 to-background" />
@@ -26,8 +26,7 @@ export function Hero() {
         </h1>
 
         <p className="mt-5 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
-          Uma noite de bandas típicas alemãs, cuca com linguiça em fatias, chopp Hellen gelado e
-          espumante — no aconchego do {EVENT.venue}.
+          Uma noite de bandas típicas alemãs, open food com tradicional gastronomia alemã, open bar com espumante e chopp Hellen liberados.
         </p>
 
         {/* Detalhes do evento */}

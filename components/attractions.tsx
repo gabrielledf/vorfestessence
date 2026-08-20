@@ -4,7 +4,7 @@ const ATTRACTIONS = [
   {
     icon: UtensilsCrossed,
     title: 'Gastronomia Típica',
-    description: 'Cuca com linguiça em fatias e o melhor da culinária alemã servido no capricho.',
+    description: 'Diversos sabores de cucas e linguiça em fatias e o melhor da culinária alemã servido no capricho.',
     image: '/cuca-linguica.png',
     imageAlt: 'Cuca com linguiça em fatias sobre tábua rústica',
   },
