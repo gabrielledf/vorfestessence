@@ -1,26 +1,26 @@
-import { Beer, Music, UtensilsCrossed, Wine } from 'lucide-react'
+import { Beer, Music, UtensilsCrossed, Wine, Sparkles, Shirt } from 'lucide-react'
 
 const ATTRACTIONS = [
   {
     icon: UtensilsCrossed,
     title: 'Gastronomia Típica',
-    description: 'Diversos sabores de cucas e linguiça em fatias e o melhor da culinária alemã servido no capricho.',
+    description: 'Open food com diversos sabores de cucas; linguiça em fatias e o melhor da culinária alemã servidos no capricho.',
     image: '/cuca-linguica.png',
     imageAlt: 'Cuca com linguiça em fatias sobre tábua rústica',
   },
   {
-    icon: Beer,
-    title: 'Chopp Hellen Gelado',
-    description: 'O chopp Hellen na temperatura perfeita, com colarinho cremoso a noite toda.',
-    image: '/chopp-hellen.png',
-    imageAlt: 'Caneca de chopp gelado com espuma',
-  },
-  {
     icon: Wine,
     title: 'Espumante',
-    description: 'Brinde à noite com espumante gelado para começar a festa com elegância.',
+    description: 'Open bar de espumantes. Brinde à noite toda com espumante liberada.',
     image: '/espumante.png',
     imageAlt: '',
+  },
+  {
+    icon: Beer,
+    title: 'Chopp Hellen Gelado',
+    description: 'Open bar com chopp Hellen na temperatura perfeita, com colarinho cremoso a noite toda.',
+    image: '/chopp-hellen.png',
+    imageAlt: 'Caneca de chopp gelado com espuma',
   },
   {
     icon: Music,
@@ -28,6 +28,20 @@ const ATTRACTIONS = [
     description: 'Bandas alemãs ao vivo com o repertório clássico da Oktoberfest.',
     image: '/banda-tipica.png',
     imageAlt: 'Banda típica alemã tocando ao vivo',
+  },
+  {
+    icon: Sparkles,
+    title: 'Decoração Temática',
+    description: 'Decoração temática alemã para suas fotos ficarem no clima da festa',
+    image: '/decoracao.png',
+    imageAlt: 'Decoração temática alemã',
+  },
+  {
+    icon: Shirt,
+    title: 'Concurso Trajes Típicos',
+    description: 'Venha vestido a caráter e concorra a prêmios especiais.',
+    image: '/traje.png',
+    imageAlt: 'Concurso Trajes Típicos',
   },
 ]
 
