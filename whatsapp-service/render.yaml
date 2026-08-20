@@ -20,7 +20,7 @@ services:
       - key: WHATSAPP_SERVICE_TOKEN
         sync: false
       - key: EVENT_NAME
-        value: Vorfest Essence
+        value: Essence Vorfest
       - key: EVENT_VENUE
         value: Restaurante Essence
       - key: EVENT_DATE

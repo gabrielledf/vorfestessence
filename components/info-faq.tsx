@@ -14,7 +14,7 @@ const STEPS = [
   {
     icon: ShieldCheck,
     title: '3. Retire a pulseira',
-    description: 'Apresente o voucher na entrada do evento para trocar pela sua pulseira de acesso.',
+    description: 'Apresente o voucher, antecipadamente em um dos pontos oficiais, ou na entrada do evento para trocar pela sua pulseira de acesso.',
   },
 ]
 

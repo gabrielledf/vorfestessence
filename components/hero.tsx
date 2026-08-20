@@ -21,7 +21,7 @@ export function Hero() {
         </span>
 
         <h1 className="mt-6 max-w-3xl text-balance font-display text-4xl font-bold uppercase leading-tight tracking-tight text-foreground sm:text-6xl">
-          Vorfest Essence
+          Essence Vorfest
           <span className="mt-2 block text-primary">{EVENT.tagline}</span>
         </h1>
 

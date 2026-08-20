@@ -36,9 +36,9 @@ const SERVICE_TOKEN = process.env.WHATSAPP_SERVICE_TOKEN || ''
 const AUTH_DIR = process.env.AUTH_DIR || './auth_state'
 
 const EVENT = {
-  name: process.env.EVENT_NAME || 'Vorfest Essence',
+  name: process.env.EVENT_NAME || 'Essence Vorfest',
   venue: process.env.EVENT_VENUE || 'Restaurante Essence',
-  date: process.env.EVENT_DATE || 'Sábado, 27 de Setembro de 2026',
+  date: process.env.EVENT_DATE || 'Sábado, 26 de Setembro de 2026',
 }
 
 const logger = pino({ level: 'warn' })
@@ -97,7 +97,7 @@ async function startSocket() {
     auth: state,
     logger,
     printQRInTerminal: false,
-    browser: ['Vorfest Essence', 'Chrome', '1.0.0'],
+    browser: ['Essence Vorfest', 'Chrome', '1.0.0'],
   })
 
   sock.ev.on('creds.update', saveCreds)

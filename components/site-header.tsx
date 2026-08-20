@@ -9,7 +9,7 @@ export function SiteHeader() {
             <Beer className="h-5 w-5" aria-hidden="true" />
           </span>
           <span className="font-display text-lg font-semibold uppercase tracking-wide text-foreground">
-            Vorfest Essence
+            Essence Vorfest
           </span>
         </a>
 
