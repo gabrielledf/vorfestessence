@@ -57,7 +57,7 @@ function toWhatsAppJid(phone) {
 }
 
 // ------- Monta a mensagem do voucher -------
-function buildVoucherMessage({ name, quantity, amount, txid }) {
+function buildVoucherMessage({ name, quantity, amount, voucherCode }) {
   const firstName = String(name || 'Cliente').split(' ')[0]
   const plural = Number(quantity) > 1 ? 's' : ''
   const total = Number(amount).toLocaleString('pt-BR', {
@@ -75,7 +75,7 @@ function buildVoucherMessage({ name, quantity, amount, txid }) {
     `Nome: ${name}\n` +
     `Ingresso${plural}: ${quantity}\n` +
     `Total pago: ${total}\n` +
-    `Código: ${txid}\n` +
+    `Código: ${voucherCode}\n` +
     `----------------------------------\n\n` +
     `*Local:* ${EVENT.venue}\n` +
     `*Data:* ${EVENT.date}\n\n` +
@@ -84,6 +84,16 @@ function buildVoucherMessage({ name, quantity, amount, txid }) {
     `Nos vemos lá! Prost! \u{1F37B}`
   )
 }
+
+function authorize(req, res) {
+  const token = (req.headers.authorization || '').replace('Bearer ', '')
+  if (!SERVICE_TOKEN || token !== SERVICE_TOKEN) {
+    res.status(401).json({ error: 'Não autorizado' })
+    return false
+  }
+  return true
+}
+
 
 // ------- Inicializa/mantém a conexão do WhatsApp -------
 async function startSocket() {
@@ -152,11 +162,7 @@ app.get('/status', (_req, res) => {
 
 app.post('/send-voucher', async (req, res) => {
   // Autenticação da chamada vinda da Vercel
-  const auth = req.headers.authorization || ''
-  const token = auth.replace('Bearer ', '')
-  if (!SERVICE_TOKEN || token !== SERVICE_TOKEN) {
-    return res.status(401).json({ error: 'Não autorizado' })
-  }
+  if (!authorize(req, res)) return
 
   const { name, phone, quantity = 1, amount = 0, txid = '' } = req.body || {}
   if (!phone) {
@@ -169,7 +175,7 @@ app.post('/send-voucher', async (req, res) => {
 
   try {
     const jid = toWhatsAppJid(phone)
-    const message = buildVoucherMessage({ name, quantity, amount, txid })
+    const message = buildVoucherMessage({ name, quantity, amount, voucherCode: txid })
     await sock.sendMessage(jid, { text: message })
     console.log(`[wa] Voucher enviado para ${jid} (txid: ${txid})`)
     return res.json({ sent: true, to: jid })

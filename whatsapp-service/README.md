@@ -64,6 +64,13 @@ No projeto Next.js (Vercel), defina:
 - `WHATSAPP_SERVICE_URL` = URL pública do serviço no Render (ex.: `https://vorfest-whatsapp.onrender.com`)
 - `WHATSAPP_SERVICE_TOKEN` = **o mesmo** token configurado aqui
 
+Para o backoffice, defina também no projeto Next.js:
+
+- `ESSENCE_ADMIN_PASSWORD` = senha exclusiva do painel (não use a senha do Gmail)
+- `ESSENCE_ADMIN_SESSION_SECRET` = segredo longo e aleatório para assinar a sessão
+
+Os pedidos são gravados no Neon Postgres pelo projeto Next.js. O Render é usado somente para manter o WhatsApp conectado e enviar vouchers.
+
 ## Rodando localmente
 
 ```bash

@@ -23,6 +23,9 @@ export function SiteHeader() {
           <a href="#faq" className="text-sm text-muted-foreground transition-colors hover:text-primary">
             FAQ
           </a>
+          <a href="/essence" className="text-sm text-muted-foreground transition-colors hover:text-primary">
+            Área Essence
+          </a>
         </nav>
 
         <a

@@ -23,6 +23,7 @@ export function Checkout() {
   const [errors, setErrors] = useState<FormErrors>({})
   const [modalOpen, setModalOpen] = useState(false)
   const [payload, setPayload] = useState('')
+  const [txid, setTxid] = useState('')
 
   const total = quantity * EVENT.ticketPrice
 
@@ -53,6 +54,7 @@ export function Checkout() {
       txid,
     })
     setPayload(code)
+    setTxid(txid)
     setModalOpen(true)
   }
 
@@ -208,6 +210,7 @@ export function Checkout() {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         payload={payload}
+        txid={txid}
         amount={total}
         customerName={name.trim().split(' ')[0]}
         customer={{ name: name.trim(), cpf, phone, email: email.trim(), quantity }}

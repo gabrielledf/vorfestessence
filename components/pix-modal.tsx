@@ -9,17 +9,24 @@ interface PixModalProps {
   open: boolean
   onClose: () => void
   payload: string
+  txid: string
   amount: number
   customerName: string
   customer: { name: string; cpf: string; phone: string; email: string; quantity: number }
   essenceWhatsApp: string
 }
 
-export function PixModal({ open, onClose, payload, amount, customerName, customer, essenceWhatsApp }: PixModalProps) {
+export function PixModal({ open, onClose, payload, txid, amount, customerName, customer, essenceWhatsApp }: PixModalProps) {
   const [copied, setCopied] = useState(false)
+  const [savingOrder, setSavingOrder] = useState(false)
+  const [orderSaved, setOrderSaved] = useState(false)
 
   useEffect(() => {
-    if (open) setCopied(false)
+    if (open) {
+      setCopied(false)
+      setSavingOrder(false)
+      setOrderSaved(false)
+    }
   }, [open])
 
   useEffect(() => {
@@ -54,13 +61,30 @@ export function PixModal({ open, onClose, payload, amount, customerName, custome
     'Estou enviando o comprovante do PIX para confirmação.',
   ].join('\n')
 
-  const sendReceipt = () => {
+  const sendReceipt = async () => {
     const phone = essenceWhatsApp.replace(/\D/g, '')
     if (!phone) {
       window.alert('O WhatsApp do Essence ainda não foi configurado. Entre em contato com a equipe para concluir a compra.')
       return
     }
-    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(whatsappMessage)}`, '_blank', 'noopener,noreferrer')
+    setSavingOrder(true)
+    try {
+      if (!orderSaved) {
+        const response = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...customer, amount, txid }),
+        })
+        const data = await response.json()
+        if (!response.ok) throw new Error(data.error || 'Não foi possível registrar seu pedido.')
+        setOrderSaved(true)
+      }
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(whatsappMessage)}`, '_blank', 'noopener,noreferrer')
+    } catch (error) {
+      window.alert(`Não foi possível registrar o pedido. Tente novamente. ${(error as Error).message}`)
+    } finally {
+      setSavingOrder(false)
+    }
   }
 
   return (
@@ -89,8 +113,8 @@ export function PixModal({ open, onClose, payload, amount, customerName, custome
 
           <div className="mt-6 border-t border-border pt-5">
             <p className="text-center text-xs leading-relaxed text-muted-foreground">Após realizar o pagamento, envie o comprovante pelo WhatsApp para confirmar seu ingresso.</p>
-            <button type="button" onClick={sendReceipt} className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] py-3 text-sm font-semibold text-white transition-transform hover:scale-[1.02]">
-              <MessageCircle className="h-5 w-5" /> Enviar comprovante pelo WhatsApp
+            <button type="button" onClick={sendReceipt} disabled={savingOrder} className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] py-3 text-sm font-semibold text-white transition-transform hover:scale-[1.02] disabled:cursor-wait disabled:opacity-60">
+              <MessageCircle className="h-5 w-5" /> {savingOrder ? 'Registrando pedido...' : 'Enviar comprovante pelo WhatsApp'}
             </button>
           </div>
         </div>
