@@ -3,7 +3,7 @@
 import { Minus, Plus, Ticket } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { PixModal } from '@/components/pix-modal'
-import { EVENT, PIX_RECEIVER } from '@/lib/event'
+import { ESSENCE_WHATSAPP, EVENT, PIX_RECEIVER } from '@/lib/event'
 import { formatBRL, isValidCPF, isValidPhone, maskCPF, maskPhone } from '@/lib/format'
 import { generatePixPayload } from '@/lib/pix'
 
@@ -11,12 +11,14 @@ interface FormErrors {
   name?: string
   phone?: string
   cpf?: string
+  email?: string
 }
 
 export function Checkout() {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [cpf, setCpf] = useState('')
+  const [email, setEmail] = useState('')
   const [quantity, setQuantity] = useState(1)
   const [errors, setErrors] = useState<FormErrors>({})
   const [modalOpen, setModalOpen] = useState(false)
@@ -33,6 +35,7 @@ export function Checkout() {
     if (name.trim().length < 3) next.name = 'Informe seu nome completo.'
     if (!isValidPhone(phone)) next.phone = 'Informe um WhatsApp válido com DDD.'
     if (!isValidCPF(cpf)) next.cpf = 'Informe um CPF válido.'
+    if (!/^\S+@\S+\.\S+$/.test(email.trim())) next.email = 'Informe um e-mail válido.'
     setErrors(next)
     return Object.keys(next).length === 0
   }
@@ -72,13 +75,14 @@ export function Checkout() {
             Compre seu ingresso
           </h2>
           <p className="mx-auto mt-3 max-w-md text-pretty text-sm text-muted-foreground">
-            Preencha seus dados, pague via PIX e receba o voucher no WhatsApp. Simples assim.
+            Preencha seus dados, pague via PIX e envie o comprovante pelo WhatsApp para confirmar seu ingresso.
           </p>
         </div>
 
         <div className="mt-12 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
           {/* Formulário */}
           <form
+            id="checkout-form"
             onSubmit={handleSubmit}
             noValidate
             className="rounded-2xl border border-border bg-background p-6 sm:p-8"
@@ -111,6 +115,16 @@ export function Checkout() {
                 placeholder="000.000.000-00"
                 error={errors.cpf}
                 inputMode="numeric"
+              />
+              <Field
+                id="email"
+                label="E-mail"
+                value={email}
+                onChange={setEmail}
+                placeholder="voce@exemplo.com"
+                error={errors.email}
+                inputMode="email"
+                autoComplete="email"
               />
 
               {/* Quantidade */}
@@ -176,15 +190,15 @@ export function Checkout() {
 
             <button
               type="submit"
-              onClick={handleSubmit}
+              form="checkout-form"
               className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-primary py-3.5 text-base font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition-transform hover:scale-[1.02]"
             >
               <Ticket className="h-5 w-5" />
-              Gerar PIX e pagar
+              Comprar ingresso
             </button>
 
             <p className="mt-3 text-center text-xs text-muted-foreground">
-              Pagamento seguro via PIX. Voucher enviado no WhatsApp após a confirmação.
+              Após o pagamento, envie o comprovante pelo WhatsApp para confirmar seu ingresso.
             </p>
           </div>
         </div>
@@ -196,6 +210,8 @@ export function Checkout() {
         payload={payload}
         amount={total}
         customerName={name.trim().split(' ')[0]}
+        customer={{ name: name.trim(), cpf, phone, email: email.trim(), quantity }}
+        essenceWhatsApp={ESSENCE_WHATSAPP}
       />
     </section>
   )
@@ -208,7 +224,7 @@ interface FieldProps {
   onChange: (value: string) => void
   placeholder?: string
   error?: string
-  inputMode?: 'text' | 'tel' | 'numeric'
+  inputMode?: 'text' | 'tel' | 'numeric' | 'email'
   autoComplete?: string
 }
 

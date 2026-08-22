@@ -1,15 +1,17 @@
 import { type NextRequest, NextResponse } from 'next/server'
+import { sendVoucherByWhatsApp } from '@/lib/whatsapp'
 
 /**
  * Webhook de confirmação de PIX (Vercel Serverless).
  *
  * Recebe o aviso do gateway de pagamento (Mercado Pago / Asaas / EFI Pay)
- * de que o PIX foi confirmado. Quando o pagamento está aprovado, faz um POST
- * para o microserviço de WhatsApp hospedado no Render.com, que dispara o voucher.
+ * de que o PIX foi confirmado. Quando o pagamento está aprovado, chama a
+ * Evolution API hospedada no Render.com para disparar o voucher.
  *
  * Variáveis de ambiente esperadas:
- * - WHATSAPP_SERVICE_URL   URL base do serviço no Render (ex.: https://vorfest-wa.onrender.com)
- * - WHATSAPP_SERVICE_TOKEN Token compartilhado para autenticar a chamada Vercel -> Render
+ * - EVOLUTION_API_URL      URL base da Evolution API no Render
+ * - EVOLUTION_API_KEY      API key global da Evolution API
+ * - EVOLUTION_INSTANCE     Nome da instância WhatsApp conectada na Evolution API
  * - PIX_WEBHOOK_SECRET     (opcional) segredo para validar a origem do gateway
  */
 
@@ -88,34 +90,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true, status: payment.status })
     }
 
-    const serviceUrl = process.env.WHATSAPP_SERVICE_URL
-    if (!serviceUrl) {
-      console.log('[v0] WHATSAPP_SERVICE_URL não configurada — voucher não enviado.')
+    if (!process.env.EVOLUTION_API_URL || !process.env.EVOLUTION_API_KEY || !process.env.EVOLUTION_INSTANCE) {
+      console.log('[v0] Evolution API não configurada — voucher não enviado.')
       return NextResponse.json(
-        { received: true, warning: 'WHATSAPP_SERVICE_URL não configurada' },
+        { received: true, warning: 'Evolution API não configurada' },
         { status: 200 },
       )
     }
 
-    // Encaminha para o microserviço do Render
-    const res = await fetch(`${serviceUrl.replace(/\/$/, '')}/send-voucher`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.WHATSAPP_SERVICE_TOKEN ?? ''}`,
-      },
-      body: JSON.stringify({
+    try {
+      await sendVoucherByWhatsApp({
         name: payment.customerName,
         phone: payment.customerPhone,
         quantity: payment.quantity,
         amount: payment.amount,
         txid: payment.txid,
-      }),
-    })
-
-    if (!res.ok) {
-      const text = await res.text().catch(() => '')
-      console.log('[v0] Falha ao acionar o serviço de WhatsApp:', res.status, text)
+      })
+    } catch (error) {
+      console.log('[v0] Falha ao enviar voucher pela Evolution API:', (error as Error).message)
       return NextResponse.json({ received: true, forwarded: false }, { status: 502 })
     }
 

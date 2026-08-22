@@ -20,3 +20,7 @@ export const PIX_RECEIVER = {
   name: 'Essence Restaurante',
   city: 'Santa Cruz do Sul',
 } as const
+
+// Número que receberá os comprovantes. Configure NEXT_PUBLIC_ESSENCE_WHATSAPP
+// com DDI + DDD + número, apenas dígitos. Ex.: 5551999999999.
+export const ESSENCE_WHATSAPP = process.env.NEXT_PUBLIC_ESSENCE_WHATSAPP ?? ''

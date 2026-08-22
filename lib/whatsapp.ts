@@ -1,0 +1,57 @@
+/** Cliente server-side para a Evolution API. Não o importe em componentes client. */
+
+interface VoucherData {
+  name: string
+  phone: string
+  quantity: number
+  amount: number
+  txid: string
+}
+
+function toBrazilianWhatsAppNumber(phone: string): string {
+  const digits = phone.replace(/\D/g, '')
+  if (!digits) throw new Error('Telefone do cliente ausente')
+  return digits.startsWith('55') ? digits : `55${digits}`
+}
+
+function voucherText({ name, quantity, amount, txid }: VoucherData): string {
+  const firstName = name.trim().split(/\s+/)[0] || 'Cliente'
+  const plural = quantity > 1 ? 's' : ''
+  const total = amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+
+  return [
+    '*PAGAMENTO CONFIRMADO!* 🍺', '',
+    `Olá, ${firstName}! Seu pagamento foi aprovado e seu ingresso está garantido.`, '',
+    '*Essence Vorfest*', '_O Aquece da Oktoberfest_', '',
+    '----------------------------------', '*VOUCHER DE INGRESSO*', `Nome: ${name}`,
+    `Ingresso${plural}: ${quantity}`, `Total pago: ${total}`, `Código: ${txid}`,
+    '----------------------------------', '', '*Local:* Essence Restaurante e Eventos',
+    '*Data:* Sábado, 26 de Setembro de 2026', '',
+    'Apresente este voucher e um documento com foto para retirar sua pulseira de acesso.', '',
+    'Nos vemos lá! Prost! 🍺',
+  ].join('\n')
+}
+
+export async function sendVoucherByWhatsApp(data: VoucherData) {
+  const baseUrl = process.env.EVOLUTION_API_URL?.replace(/\/$/, '')
+  const apiKey = process.env.EVOLUTION_API_KEY
+  const instance = process.env.EVOLUTION_INSTANCE
+  if (!baseUrl || !apiKey || !instance) {
+    throw new Error('Evolution API não configurada: defina EVOLUTION_API_URL, EVOLUTION_API_KEY e EVOLUTION_INSTANCE')
+  }
+
+  const response = await fetch(`${baseUrl}/message/sendText/${encodeURIComponent(instance)}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', apikey: apiKey },
+    body: JSON.stringify({
+      number: toBrazilianWhatsAppNumber(data.phone),
+      text: voucherText(data),
+      linkPreview: false,
+    }),
+  })
+
+  if (!response.ok) {
+    const detail = await response.text().catch(() => '')
+    throw new Error(`Evolution API respondeu ${response.status}: ${detail.slice(0, 500)}`)
+  }
+}
