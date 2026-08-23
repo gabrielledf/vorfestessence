@@ -8,6 +8,7 @@ export const EVENT = {
   date: 'Sábado, 26 de Setembro de 2026',
   time: 'A partir das 20h',
   location: 'Essence Restaurante e Eventos (indoor)',
+  address: 'Avenida Melvin Jones, 1221, Jardim Europa, CEP 96823-000, Santa Cruz do Sul - RS',
   totalTickets: 200,
   ticketPrice: 180,
   maxPerOrder: 10,

@@ -1,9 +1,20 @@
-import { CalendarDays, Clock, MapPin, Ticket } from 'lucide-react'
-import { EVENT } from '@/lib/event'
+'use client'
+
+import { useState } from 'react'
+import { CalendarDays, Clock, MapPin, MessageCircle, Ticket } from 'lucide-react'
+import { ESSENCE_WHATSAPP, EVENT } from '@/lib/event'
+import { LocationModal } from '@/components/location-modal'
 
 export function Hero() {
+  const [mapOpen, setMapOpen] = useState(false)
+  const contactMessage = 'Olá! Tenho uma dúvida sobre o Essence Vorfest.'
+  const contactUrl = ESSENCE_WHATSAPP
+    ? `https://wa.me/${ESSENCE_WHATSAPP.replace(/\D/g, '')}?text=${encodeURIComponent(contactMessage)}`
+    : '#'
+
   return (
-    <section id="top" className="relative overflow-hidden">
+    <>
+      <section id="top" className="relative overflow-hidden">
       {/* Imagem de fundo */}
       <div className="absolute inset-0">
         <img
@@ -33,7 +44,25 @@ export function Hero() {
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <InfoPill icon={CalendarDays} label={EVENT.date} />
           <InfoPill icon={Clock} label={EVENT.time} />
-          <InfoPill icon={MapPin} label={EVENT.location} />
+          <button
+            type="button"
+            onClick={() => setMapOpen(true)}
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-4 py-2 text-sm text-foreground backdrop-blur transition-colors hover:border-primary/60 hover:bg-card"
+          >
+            <MapPin className="h-4 w-4 text-primary" aria-hidden="true" />
+            {EVENT.location}
+          </button>
+          <a
+            href={contactUrl}
+            target="_blank"
+            rel="noreferrer"
+            aria-disabled={!ESSENCE_WHATSAPP}
+            onClick={(event) => { if (!ESSENCE_WHATSAPP) event.preventDefault() }}
+            className={`inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-4 py-2 text-sm text-foreground backdrop-blur transition-colors hover:border-primary/60 hover:bg-card ${!ESSENCE_WHATSAPP ? 'cursor-not-allowed opacity-50' : ''}`}
+          >
+            <MessageCircle className="h-4 w-4 text-primary" aria-hidden="true" />
+            Contato
+          </a>
         </div>
 
         <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row">
@@ -51,7 +80,11 @@ export function Hero() {
           </a>
         </div>
       </div>
-    </section>
+
+      </section>
+
+      <LocationModal open={mapOpen} onClose={() => setMapOpen(false)} />
+    </>
   )
 }
 
