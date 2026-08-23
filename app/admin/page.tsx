@@ -212,10 +212,10 @@ export default function AdminPage() {
         <header className="flex flex-wrap items-center justify-between gap-4">
           <div><p className="font-display text-sm font-semibold uppercase tracking-widest text-primary">Área administrativa</p><h1 className="mt-1 font-display text-3xl font-bold uppercase text-foreground">Ingressos vendidos</h1></div>
           <div className="flex flex-wrap gap-2">
-            <button onClick={generateWhatsAppQrCode} className="rounded-full border border-primary px-4 py-2 text-sm font-semibold text-primary">Reconectar WhatsApp</button>
-            <button onClick={() => setOfflineSaleOpen(true)} disabled={loading} className="rounded-full border border-primary px-4 py-2 text-sm font-semibold text-primary disabled:opacity-50">Cadastrar venda presencial</button>
+            <button onClick={() => setOfflineSaleOpen(true)} disabled={loading} className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-50">Cadastrar venda presencial</button>
             <button onClick={() => setSummaryOpen(true)} disabled={loading} className="rounded-full border border-primary px-4 py-2 text-sm font-semibold text-primary disabled:opacity-50">Ver extrato</button>
-            <button onClick={exportOrders} disabled={loading || orders.length === 0} className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-50">Exportar planilha</button>
+            <button onClick={exportOrders} disabled={loading || orders.length === 0} className="rounded-full border border-primary px-4 py-2 text-sm font-semibold text-primary disabled:opacity-50">Exportar planilha</button>
+            <button onClick={generateWhatsAppQrCode} className="rounded-full border border-primary px-4 py-2 text-sm font-semibold text-primary">Reconectar WhatsApp</button>
             <button onClick={logout} className="rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground">Sair</button>
           </div>
         </header>
