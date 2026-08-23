@@ -9,7 +9,7 @@ export const EVENT = {
   time: 'A partir das 20h',
   location: 'Essence Restaurante e Eventos (indoor)',
   totalTickets: 200,
-  ticketPrice: 180,
+  ticketPrice: 1,
   maxPerOrder: 10,
 } as const
 
