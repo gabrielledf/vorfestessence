@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { formatBRL } from '@/lib/format'
 import type { Order, OrderStatus } from '@/lib/orders-service'
@@ -13,6 +13,8 @@ const labels: Record<OrderStatus, string> = {
   CANCELADO: 'Cancelado',
 }
 
+const sellers = ['Essence', 'Agafarma', 'Rotary', 'BNI'] as const
+
 function csvCell(value: string | number | undefined) {
   const text = value == null ? '' : String(value)
   const safeText = /^[=+\-@]/.test(text) ? `'${text}` : text
@@ -21,6 +23,11 @@ function csvCell(value: string | number | undefined) {
 
 function formatDate(value?: string) {
   return value ? new Date(value).toLocaleString('pt-BR') : ''
+}
+
+function parseBRL(value: string) {
+  const normalized = value.includes(',') ? value.replace(/\./g, '').replace(',', '.') : value
+  return Number(normalized.trim())
 }
 
 export default function AdminPage() {
@@ -32,6 +39,11 @@ export default function AdminPage() {
   const [confirming, setConfirming] = useState('')
   const [delivering, setDelivering] = useState('')
   const [summaryOpen, setSummaryOpen] = useState(false)
+  const [offlineSaleOpen, setOfflineSaleOpen] = useState(false)
+  const [offlineSeller, setOfflineSeller] = useState<(typeof sellers)[number]>('Essence')
+  const [offlineQuantity, setOfflineQuantity] = useState('1')
+  const [offlineAmount, setOfflineAmount] = useState('')
+  const [savingOfflineSale, setSavingOfflineSale] = useState(false)
 
   const loadOrders = async () => {
     setLoading(true)
@@ -119,6 +131,34 @@ export default function AdminPage() {
     }
   }
 
+  const createOfflineSale = async (event: FormEvent) => {
+    event.preventDefault()
+    setSavingOfflineSale(true)
+    setError('')
+    try {
+      const response = await fetch('/api/orders/offline', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          seller: offlineSeller,
+          quantity: Number(offlineQuantity),
+          amount: parseBRL(offlineAmount),
+        }),
+      })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error || 'Não foi possível cadastrar a venda presencial.')
+      setOfflineSaleOpen(false)
+      setOfflineSeller('Essence')
+      setOfflineQuantity('1')
+      setOfflineAmount('')
+      await loadOrders()
+    } catch (reason) {
+      setError((reason as Error).message)
+    } finally {
+      setSavingOfflineSale(false)
+    }
+  }
+
   const visibleOrders = useMemo(() => orders.filter((order) => filter === 'TODOS' || order.status === filter), [filter, orders])
   const summary = useMemo(() => {
     const paidStatuses: OrderStatus[] = ['PAGO', 'VOUCHER_ENVIADO', 'PULSEIRA_ENTREGUE']
@@ -147,6 +187,7 @@ export default function AdminPage() {
         <header className="flex flex-wrap items-center justify-between gap-4">
           <div><p className="font-display text-sm font-semibold uppercase tracking-widest text-primary">Área administrativa</p><h1 className="mt-1 font-display text-3xl font-bold uppercase text-foreground">Ingressos vendidos</h1></div>
           <div className="flex flex-wrap gap-2">
+            <button onClick={() => setOfflineSaleOpen(true)} disabled={loading} className="rounded-full border border-primary px-4 py-2 text-sm font-semibold text-primary disabled:opacity-50">Cadastrar venda presencial</button>
             <button onClick={() => setSummaryOpen(true)} disabled={loading} className="rounded-full border border-primary px-4 py-2 text-sm font-semibold text-primary disabled:opacity-50">Ver extrato</button>
             <button onClick={exportOrders} disabled={loading || orders.length === 0} className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-50">Exportar planilha</button>
             <button onClick={logout} className="rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground">Sair</button>
@@ -193,6 +234,37 @@ export default function AdminPage() {
             </div>
             <p className="mt-5 text-xs text-muted-foreground">Ingressos vendidos incluem pagamentos confirmados, vouchers enviados e pulseiras entregues. Pedidos cancelados não entram nos totais.</p>
           </div>
+        </div>
+      )}
+
+      {offlineSaleOpen && (
+        <div role="dialog" aria-modal="true" aria-labelledby="offline-sale-title" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-8" onClick={() => !savingOfflineSale && setOfflineSaleOpen(false)}>
+          <form onSubmit={createOfflineSale} className="w-full max-w-md rounded-2xl border border-border bg-background p-6 shadow-2xl sm:p-8" onClick={(event) => event.stopPropagation()}>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="font-display text-sm font-semibold uppercase tracking-widest text-primary">Venda fora do site</p>
+                <h2 id="offline-sale-title" className="mt-1 font-display text-2xl font-bold uppercase text-foreground">Venda presencial</h2>
+              </div>
+              <button type="button" onClick={() => setOfflineSaleOpen(false)} disabled={savingOfflineSale} aria-label="Fechar cadastro" className="rounded-full border border-border px-3 py-1.5 text-sm font-semibold text-foreground disabled:opacity-50">Fechar</button>
+            </div>
+
+            <div className="mt-6 space-y-4">
+              <label className="block text-sm font-medium text-foreground">Vendedor
+                <select value={offlineSeller} onChange={(event) => setOfflineSeller(event.target.value as (typeof sellers)[number])} className="mt-1.5 w-full rounded-lg border border-border bg-card px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/60">
+                  {sellers.map((seller) => <option key={seller} value={seller}>{seller}</option>)}
+                </select>
+              </label>
+              <label className="block text-sm font-medium text-foreground">Quantidade de ingressos
+                <input type="number" min="1" step="1" value={offlineQuantity} onChange={(event) => setOfflineQuantity(event.target.value)} required className="mt-1.5 w-full rounded-lg border border-border bg-card px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/60" />
+              </label>
+              <label className="block text-sm font-medium text-foreground">Valor total da venda
+                <input type="text" inputMode="decimal" value={offlineAmount} onChange={(event) => setOfflineAmount(event.target.value)} placeholder="0,00" required className="mt-1.5 w-full rounded-lg border border-border bg-card px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/60" />
+              </label>
+            </div>
+
+            <button disabled={savingOfflineSale} className="mt-6 w-full rounded-full bg-primary py-3 font-semibold text-primary-foreground disabled:opacity-60">{savingOfflineSale ? 'Cadastrando...' : 'Cadastrar venda'}</button>
+            <p className="mt-3 text-center text-xs text-muted-foreground">A venda será cadastrada como pulseira entregue, sem envio de voucher.</p>
+          </form>
         </div>
       )}
     </main>

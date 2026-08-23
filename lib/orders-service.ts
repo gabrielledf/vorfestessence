@@ -92,6 +92,18 @@ export async function createOrder(input: Omit<Order, 'id' | 'voucherCode' | 'sta
   return toOrder(rows[0])
 }
 
+export async function createOfflineOrder(input: { seller: string; quantity: number; amount: number }) {
+  await ensureSchema()
+  const db = sql()
+  const rows = (await db`INSERT INTO orders (
+      id, name, cpf, phone, email, quantity, amount, txid, voucher_code, status, paid_at, wristband_delivered_at
+    ) VALUES (
+      ${randomUUID()}, ${input.seller}, ${'45129900000171'}, ${'51994611398'}, ${'essencerestaurante@gmail.com'},
+      ${input.quantity}, ${input.amount}, ${`PRESENCIAL-${randomUUID()}`}, ${voucherCode()}, 'PULSEIRA_ENTREGUE', NOW(), NOW()
+    ) RETURNING *`) as OrderRow[]
+  return toOrder(rows[0])
+}
+
 export async function listOrders() {
   await ensureSchema()
   const db = sql()
