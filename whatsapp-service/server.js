@@ -80,7 +80,7 @@ function buildVoucherMessage({ name, quantity, amount, voucherCode }) {
     `*Local:* ${EVENT.venue}\n` +
     `*Data:* ${EVENT.date}\n\n` +
     `*Como retirar sua pulseira:*\n` +
-    `Apresente este voucher no Essence de seg-sábado das 9H-13H, ou na entrada do evento junto com um documento com foto para trocar pela sua pulseira de acesso.\n\n` +
+    `Apresente este voucher no Essence de seg-sábado das 9h-13h, ou na entrada do evento junto com um documento com foto para trocar pela sua pulseira de acesso.\n\n` +
     `Nos vemos lá! Prost! \u{1F37B}`
   )
 }

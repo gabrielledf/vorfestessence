@@ -13,6 +13,16 @@ const labels: Record<OrderStatus, string> = {
   CANCELADO: 'Cancelado',
 }
 
+function csvCell(value: string | number | undefined) {
+  const text = value == null ? '' : String(value)
+  const safeText = /^[=+\-@]/.test(text) ? `'${text}` : text
+  return `"${safeText.replace(/"/g, '""')}"`
+}
+
+function formatDate(value?: string) {
+  return value ? new Date(value).toLocaleString('pt-BR') : ''
+}
+
 export default function AdminPage() {
   const router = useRouter()
   const [orders, setOrders] = useState<Order[]>([])
@@ -64,6 +74,34 @@ export default function AdminPage() {
     router.replace('/')
   }
 
+  const exportOrders = () => {
+    const headers = [
+      'Nº do ticket', 'Nome', 'CPF', 'WhatsApp', 'E-mail', 'Quantidade', 'Valor',
+      'Status', 'Data do pedido', 'Pagamento confirmado em', 'Voucher enviado em', 'Pulseira entregue em',
+    ]
+    const rows = orders.map((order) => [
+      order.voucherCode,
+      order.name,
+      order.cpf,
+      order.phone,
+      order.email,
+      order.quantity,
+      order.amount.toFixed(2).replace('.', ','),
+      labels[order.status],
+      formatDate(order.createdAt),
+      formatDate(order.paidAt),
+      formatDate(order.voucherSentAt),
+      formatDate(order.wristbandDeliveredAt),
+    ])
+    const csv = ['sep=;', headers.map(csvCell).join(';'), ...rows.map((row) => row.map(csvCell).join(';'))].join('\r\n')
+    const url = URL.createObjectURL(new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8' }))
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `pedidos-vorfest-${new Date().toISOString().slice(0, 10)}.csv`
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
   const deliverWristband = async (id: string) => {
     if (!window.confirm('Confirmar que a pulseira deste pedido foi entregue?')) return
     setDelivering(id)
@@ -87,7 +125,10 @@ export default function AdminPage() {
       <div className="mx-auto max-w-6xl">
         <header className="flex flex-wrap items-center justify-between gap-4">
           <div><p className="font-display text-sm font-semibold uppercase tracking-widest text-primary">Área administrativa</p><h1 className="mt-1 font-display text-3xl font-bold uppercase text-foreground">Ingressos vendidos</h1></div>
-          <button onClick={logout} className="rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground">Sair</button>
+          <div className="flex flex-wrap gap-2">
+            <button onClick={exportOrders} disabled={loading || orders.length === 0} className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-50">Exportar planilha</button>
+            <button onClick={logout} className="rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground">Sair</button>
+          </div>
         </header>
 
         <div className="mt-7 flex flex-wrap gap-2">

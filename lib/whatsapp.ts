@@ -29,9 +29,9 @@ function voucherText({ name, quantity, amount, txid }: VoucherData): string {
     '----------------------------------', '*VOUCHER DE INGRESSO*', `Nome: ${name}`,
     `Ingresso${plural}: ${quantity}`, `Total pago: ${total}`, `Código: ${txid}`,
     '----------------------------------', '', '*Local:* Essence Restaurante e Eventos',
-    '*Data:* Sábado, 26 de Setembro de 2026, 20H', '',
+    '*Data:* Sábado, 26 de Setembro de 2026, 20h', '',
     'Apresente este voucher e um documento com foto para retirar sua pulseira de acesso.', '',
-    'A pulseira pode ser retirada no Essence de segunda à sábado, das 9H-13H, ou no dia do evento a partir das 19H:30M', '',
+    'A pulseira pode ser retirada no Essence de segunda à sábado, das 9h-13h, ou no dia do evento a partir das 19h:30m', '',
     'Nos vemos lá! Prost! 🍺',
   ].join('\n')
 }
