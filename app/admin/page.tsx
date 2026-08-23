@@ -38,7 +38,11 @@ export default function AdminPage() {
   useEffect(() => { loadOrders() }, [])
 
   const confirmPayment = async (id: string) => {
-    if (!window.confirm('Confirmar o pagamento e enviar o voucher pelo WhatsApp?')) return
+    const order = orders.find((item) => item.id === id)
+    const prompt = order?.status === 'PAGO'
+      ? 'Tentar enviar novamente o voucher pelo WhatsApp?'
+      : 'Confirmar o pagamento e enviar o voucher pelo WhatsApp?'
+    if (!window.confirm(prompt)) return
     setConfirming(id)
     setError('')
     try {
@@ -80,7 +84,7 @@ export default function AdminPage() {
             <thead className="border-b border-border text-muted-foreground"><tr><th className="px-5 py-4 font-medium">Nome</th><th className="px-5 py-4 font-medium">WhatsApp</th><th className="px-5 py-4 font-medium">Qtde.</th><th className="px-5 py-4 font-medium">Valor</th><th className="px-5 py-4 font-medium">Status</th><th className="px-5 py-4 font-medium">Ação</th></tr></thead>
             <tbody>
               {loading ? <tr><td colSpan={6} className="px-5 py-8 text-center text-muted-foreground">Carregando pedidos...</td></tr> : visibleOrders.length === 0 ? <tr><td colSpan={6} className="px-5 py-8 text-center text-muted-foreground">Nenhum pedido nesta lista.</td></tr> : visibleOrders.map((order) => (
-                <tr key={order.id} className="border-b border-border last:border-0"><td className="px-5 py-4 font-medium text-foreground"><span className="block">{order.name}</span><span className="text-xs text-muted-foreground">{order.email}</span></td><td className="px-5 py-4 text-foreground">{order.phone}</td><td className="px-5 py-4 text-foreground">{order.quantity}</td><td className="px-5 py-4 text-foreground">{formatBRL(order.amount)}</td><td className="px-5 py-4"><span className="rounded-full bg-card px-3 py-1.5 text-xs font-medium text-foreground">{labels[order.status]}</span></td><td className="px-5 py-4">{order.status === 'COMPROVANTE_ENVIADO' ? <button onClick={() => confirmPayment(order.id)} disabled={confirming === order.id} className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground disabled:opacity-60">{confirming === order.id ? 'Enviando...' : 'Confirmar pagamento'}</button> : <span className="text-xs text-muted-foreground">{order.status === 'VOUCHER_ENVIADO' ? 'Voucher enviado' : labels[order.status]}</span>}</td></tr>
+                <tr key={order.id} className="border-b border-border last:border-0"><td className="px-5 py-4 font-medium text-foreground"><span className="block">{order.name}</span><span className="text-xs text-muted-foreground">{order.email}</span></td><td className="px-5 py-4 text-foreground">{order.phone}</td><td className="px-5 py-4 text-foreground">{order.quantity}</td><td className="px-5 py-4 text-foreground">{formatBRL(order.amount)}</td><td className="px-5 py-4"><span className="rounded-full bg-card px-3 py-1.5 text-xs font-medium text-foreground">{labels[order.status]}</span></td><td className="px-5 py-4">{order.status === 'COMPROVANTE_ENVIADO' || order.status === 'PAGO' ? <button onClick={() => confirmPayment(order.id)} disabled={confirming === order.id} className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground disabled:opacity-60">{confirming === order.id ? 'Enviando...' : order.status === 'PAGO' ? 'Reenviar voucher' : 'Confirmar pagamento'}</button> : <span className="text-xs text-muted-foreground">{order.status === 'VOUCHER_ENVIADO' ? 'Voucher enviado' : labels[order.status]}</span>}</td></tr>
               ))}
             </tbody>
           </table>

@@ -40,15 +40,29 @@ export async function sendVoucherByWhatsApp(data: VoucherData) {
     throw new Error('Evolution API não configurada: defina EVOLUTION_API_URL, EVOLUTION_API_KEY e EVOLUTION_INSTANCE')
   }
 
-  const response = await fetch(`${baseUrl}/message/sendText/${encodeURIComponent(instance)}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', apikey: apiKey },
-    body: JSON.stringify({
-      number: toBrazilianWhatsAppNumber(data.phone),
-      text: voucherText(data),
-      linkPreview: false,
-    }),
-  })
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 20_000)
+  let response: Response
+
+  try {
+    response = await fetch(`${baseUrl}/message/sendText/${encodeURIComponent(instance)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: apiKey },
+      body: JSON.stringify({
+        number: toBrazilianWhatsAppNumber(data.phone),
+        text: voucherText(data),
+        linkPreview: false,
+      }),
+      signal: controller.signal,
+    })
+  } catch (error) {
+    if ((error as Error).name === 'AbortError') {
+      throw new Error('A Evolution API demorou mais de 20 segundos para responder')
+    }
+    throw error
+  } finally {
+    clearTimeout(timeout)
+  }
 
   if (!response.ok) {
     const detail = await response.text().catch(() => '')

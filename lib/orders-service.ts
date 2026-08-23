@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto'
 import { neon } from '@neondatabase/serverless'
+import { sendVoucherByWhatsApp } from '@/lib/whatsapp'
 
 export type OrderStatus = 'COMPROVANTE_ENVIADO' | 'PAGO' | 'VOUCHER_ENVIADO' | 'CANCELADO'
 
@@ -109,16 +110,11 @@ export async function markVoucherSent(id: string) {
 }
 
 export async function sendVoucher(order: Order) {
-  const baseUrl = process.env.WHATSAPP_SERVICE_URL?.replace(/\/$/, '')
-  const token = process.env.WHATSAPP_SERVICE_TOKEN
-  if (!baseUrl || !token) throw new Error('Serviço do WhatsApp não configurado')
-  const response = await fetch(`${baseUrl}/send-voucher`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: order.name, phone: order.phone, quantity: order.quantity, amount: order.amount, txid: order.voucherCode }),
+  await sendVoucherByWhatsApp({
+    name: order.name,
+    phone: order.phone,
+    quantity: order.quantity,
+    amount: order.amount,
+    txid: order.voucherCode,
   })
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({}))
-    throw new Error(body.error || 'Não foi possível enviar o voucher pelo WhatsApp')
-  }
 }
