@@ -31,6 +31,7 @@ export default function AdminPage() {
   const [error, setError] = useState('')
   const [confirming, setConfirming] = useState('')
   const [delivering, setDelivering] = useState('')
+  const [summaryOpen, setSummaryOpen] = useState(false)
 
   const loadOrders = async () => {
     setLoading(true)
@@ -119,6 +120,26 @@ export default function AdminPage() {
   }
 
   const visibleOrders = useMemo(() => orders.filter((order) => filter === 'TODOS' || order.status === filter), [filter, orders])
+  const summary = useMemo(() => {
+    const paidStatuses: OrderStatus[] = ['PAGO', 'VOUCHER_ENVIADO', 'PULSEIRA_ENTREGUE']
+    const activeOrders = orders.filter((order) => order.status !== 'CANCELADO')
+    const pendingOrders = orders.filter((order) => order.status === 'COMPROVANTE_ENVIADO')
+    const paidOrders = orders.filter((order) => paidStatuses.includes(order.status))
+    const voucherOrders = orders.filter((order) => order.status === 'VOUCHER_ENVIADO' || order.status === 'PULSEIRA_ENTREGUE')
+    const wristbandOrders = orders.filter((order) => order.status === 'PULSEIRA_ENTREGUE')
+    const tickets = (items: Order[]) => items.reduce((total, order) => total + order.quantity, 0)
+
+    return {
+      activeOrders: activeOrders.length,
+      requestedTickets: tickets(activeOrders),
+      soldTickets: tickets(paidOrders),
+      confirmedRevenue: paidOrders.reduce((total, order) => total + order.amount, 0),
+      pendingOrders: pendingOrders.length,
+      pendingTickets: tickets(pendingOrders),
+      vouchersSent: tickets(voucherOrders),
+      wristbandsDelivered: tickets(wristbandOrders),
+    }
+  }, [orders])
 
   return (
     <main className="min-h-screen bg-card/40 px-4 py-8 sm:px-6">
@@ -126,6 +147,7 @@ export default function AdminPage() {
         <header className="flex flex-wrap items-center justify-between gap-4">
           <div><p className="font-display text-sm font-semibold uppercase tracking-widest text-primary">Área administrativa</p><h1 className="mt-1 font-display text-3xl font-bold uppercase text-foreground">Ingressos vendidos</h1></div>
           <div className="flex flex-wrap gap-2">
+            <button onClick={() => setSummaryOpen(true)} disabled={loading} className="rounded-full border border-primary px-4 py-2 text-sm font-semibold text-primary disabled:opacity-50">Ver extrato</button>
             <button onClick={exportOrders} disabled={loading || orders.length === 0} className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-50">Exportar planilha</button>
             <button onClick={logout} className="rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground">Sair</button>
           </div>
@@ -149,6 +171,40 @@ export default function AdminPage() {
           </table>
         </div>
       </div>
+
+      {summaryOpen && (
+        <div role="dialog" aria-modal="true" aria-labelledby="summary-title" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-8" onClick={() => setSummaryOpen(false)}>
+          <div className="w-full max-w-2xl rounded-2xl border border-border bg-background p-6 shadow-2xl sm:p-8" onClick={(event) => event.stopPropagation()}>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="font-display text-sm font-semibold uppercase tracking-widest text-primary">Resumo consolidado</p>
+                <h2 id="summary-title" className="mt-1 font-display text-2xl font-bold uppercase text-foreground">Extrato de ingressos</h2>
+              </div>
+              <button onClick={() => setSummaryOpen(false)} aria-label="Fechar extrato" className="rounded-full border border-border px-3 py-1.5 text-sm font-semibold text-foreground">Fechar</button>
+            </div>
+
+            <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <SummaryCard label="Ingressos vendidos" value={summary.soldTickets} />
+              <SummaryCard label="Receita confirmada" value={formatBRL(summary.confirmedRevenue)} />
+              <SummaryCard label="Pendentes de confirmação" value={summary.pendingTickets} detail={`${summary.pendingOrders} pedido${summary.pendingOrders === 1 ? '' : 's'}`} />
+              <SummaryCard label="Vouchers enviados" value={summary.vouchersSent} />
+              <SummaryCard label="Pulseiras entregues" value={summary.wristbandsDelivered} />
+              <SummaryCard label="Total solicitado" value={summary.requestedTickets} detail={`${summary.activeOrders} pedido${summary.activeOrders === 1 ? '' : 's'} ativo${summary.activeOrders === 1 ? '' : 's'}`} />
+            </div>
+            <p className="mt-5 text-xs text-muted-foreground">Ingressos vendidos incluem pagamentos confirmados, vouchers enviados e pulseiras entregues. Pedidos cancelados não entram nos totais.</p>
+          </div>
+        </div>
+      )}
     </main>
+  )
+}
+
+function SummaryCard({ label, value, detail }: { label: string; value: string | number; detail?: string }) {
+  return (
+    <div className="rounded-xl border border-border bg-card/50 p-4">
+      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className="mt-2 font-display text-2xl font-bold text-foreground">{value}</p>
+      {detail && <p className="mt-1 text-xs text-muted-foreground">{detail}</p>}
+    </div>
   )
 }
