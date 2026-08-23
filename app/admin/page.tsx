@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { formatBRL } from '@/lib/format'
+import { EVENT } from '@/lib/event'
 import type { Order, OrderStatus } from '@/lib/orders-service'
 
 const labels: Record<OrderStatus, string> = {
@@ -25,11 +26,6 @@ function formatDate(value?: string) {
   return value ? new Date(value).toLocaleString('pt-BR') : ''
 }
 
-function parseBRL(value: string) {
-  const normalized = value.includes(',') ? value.replace(/\./g, '').replace(',', '.') : value
-  return Number(normalized.trim())
-}
-
 export default function AdminPage() {
   const router = useRouter()
   const [orders, setOrders] = useState<Order[]>([])
@@ -42,7 +38,6 @@ export default function AdminPage() {
   const [offlineSaleOpen, setOfflineSaleOpen] = useState(false)
   const [offlineSeller, setOfflineSeller] = useState<(typeof sellers)[number]>('Essence')
   const [offlineQuantity, setOfflineQuantity] = useState('1')
-  const [offlineAmount, setOfflineAmount] = useState('')
   const [savingOfflineSale, setSavingOfflineSale] = useState(false)
 
   const loadOrders = async () => {
@@ -142,7 +137,6 @@ export default function AdminPage() {
         body: JSON.stringify({
           seller: offlineSeller,
           quantity: Number(offlineQuantity),
-          amount: parseBRL(offlineAmount),
         }),
       })
       const data = await response.json()
@@ -150,7 +144,6 @@ export default function AdminPage() {
       setOfflineSaleOpen(false)
       setOfflineSeller('Essence')
       setOfflineQuantity('1')
-      setOfflineAmount('')
       await loadOrders()
     } catch (reason) {
       setError((reason as Error).message)
@@ -258,7 +251,7 @@ export default function AdminPage() {
                 <input type="number" min="1" step="1" value={offlineQuantity} onChange={(event) => setOfflineQuantity(event.target.value)} required className="mt-1.5 w-full rounded-lg border border-border bg-card px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/60" />
               </label>
               <label className="block text-sm font-medium text-foreground">Valor total da venda
-                <input type="text" inputMode="decimal" value={offlineAmount} onChange={(event) => setOfflineAmount(event.target.value)} placeholder="0,00" required className="mt-1.5 w-full rounded-lg border border-border bg-card px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/60" />
+                <input type="text" value={formatBRL(Number(offlineQuantity || 0) * EVENT.ticketPrice)} readOnly className="mt-1.5 w-full rounded-lg border border-border bg-card px-4 py-3 font-semibold text-foreground" />
               </label>
             </div>
 
