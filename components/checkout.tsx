@@ -34,7 +34,7 @@ export function Checkout() {
   const validate = (): boolean => {
     const next: FormErrors = {}
     if (name.trim().length < 3) next.name = 'Informe seu nome completo.'
-    if (!isValidPhone(phone)) next.phone = 'Informe um WhatsApp válido com DDD.'
+    if (!isValidPhone(phone)) next.phone = 'Informe um celular completo com DDD: (00) 90000-0000.'
     if (!isValidCPF(cpf)) next.cpf = 'Informe um CPF válido.'
     if (!/^\S+@\S+\.\S+$/.test(email.trim())) next.email = 'Informe um e-mail válido.'
     setErrors(next)

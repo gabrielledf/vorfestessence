@@ -1,8 +1,9 @@
 import { randomUUID } from 'crypto'
 import { neon } from '@neondatabase/serverless'
 import { sendVoucherByWhatsApp } from '@/lib/whatsapp'
+import { isValidPhone } from '@/lib/format'
 
-export type OrderStatus = 'COMPROVANTE_ENVIADO' | 'PAGO' | 'VOUCHER_ENVIADO' | 'CANCELADO'
+export type OrderStatus = 'COMPROVANTE_ENVIADO' | 'PAGO' | 'VOUCHER_ENVIADO' | 'PULSEIRA_ENTREGUE' | 'CANCELADO'
 
 export interface Order {
   id: string
@@ -18,11 +19,13 @@ export interface Order {
   createdAt: string
   paidAt?: string
   voucherSentAt?: string
+  wristbandDeliveredAt?: string
 }
 
 type OrderRow = {
   id: string; name: string; cpf: string; phone: string; email: string; quantity: number; amount: string | number
   txid: string; voucher_code: string; status: OrderStatus; created_at: string; paid_at: string | null; voucher_sent_at: string | null
+  wristband_delivered_at: string | null
 }
 
 function sql() {
@@ -47,11 +50,15 @@ async function ensureSchema() {
         amount NUMERIC(10,2) NOT NULL CHECK (amount > 0),
         txid TEXT NOT NULL UNIQUE,
         voucher_code TEXT NOT NULL UNIQUE,
-        status TEXT NOT NULL CHECK (status IN ('COMPROVANTE_ENVIADO', 'PAGO', 'VOUCHER_ENVIADO', 'CANCELADO')),
+        status TEXT NOT NULL CHECK (status IN ('COMPROVANTE_ENVIADO', 'PAGO', 'VOUCHER_ENVIADO', 'PULSEIRA_ENTREGUE', 'CANCELADO')),
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         paid_at TIMESTAMPTZ,
-        voucher_sent_at TIMESTAMPTZ
+        voucher_sent_at TIMESTAMPTZ,
+        wristband_delivered_at TIMESTAMPTZ
       )`
+      await db`ALTER TABLE orders ADD COLUMN IF NOT EXISTS wristband_delivered_at TIMESTAMPTZ`
+      await db`ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_status_check`
+      await db`ALTER TABLE orders ADD CONSTRAINT orders_status_check CHECK (status IN ('COMPROVANTE_ENVIADO', 'PAGO', 'VOUCHER_ENVIADO', 'PULSEIRA_ENTREGUE', 'CANCELADO'))`
     })()
   }
   return schemaPromise
@@ -63,6 +70,7 @@ function toOrder(row: OrderRow): Order {
     quantity: Number(row.quantity), amount: Number(row.amount), txid: row.txid,
     voucherCode: row.voucher_code, status: row.status, createdAt: row.created_at,
     paidAt: row.paid_at ?? undefined, voucherSentAt: row.voucher_sent_at ?? undefined,
+    wristbandDeliveredAt: row.wristband_delivered_at ?? undefined,
   }
 }
 
@@ -70,7 +78,10 @@ function voucherCode() {
   return `VF-${randomUUID().replace(/-/g, '').slice(0, 8).toUpperCase()}`
 }
 
-export async function createOrder(input: Omit<Order, 'id' | 'voucherCode' | 'status' | 'createdAt' | 'paidAt' | 'voucherSentAt'>) {
+export async function createOrder(input: Omit<Order, 'id' | 'voucherCode' | 'status' | 'createdAt' | 'paidAt' | 'voucherSentAt' | 'wristbandDeliveredAt'>) {
+  if (!isValidPhone(input.phone)) {
+    throw new Error('Informe um celular completo com DDD: (00) 90000-0000.')
+  }
   await ensureSchema()
   const db = sql()
   const existing = (await db`SELECT * FROM orders WHERE txid = ${input.txid}`) as OrderRow[]
@@ -106,6 +117,16 @@ export async function markVoucherSent(id: string) {
   await ensureSchema()
   const db = sql()
   const rows = (await db`UPDATE orders SET status = 'VOUCHER_ENVIADO', voucher_sent_at = NOW() WHERE id = ${id} RETURNING *`) as OrderRow[]
+  return rows[0] ? toOrder(rows[0]) : undefined
+}
+
+export async function markWristbandDelivered(id: string) {
+  await ensureSchema()
+  const db = sql()
+  const rows = (await db`UPDATE orders
+    SET status = 'PULSEIRA_ENTREGUE', wristband_delivered_at = COALESCE(wristband_delivered_at, NOW())
+    WHERE id = ${id} AND status = 'VOUCHER_ENVIADO'
+    RETURNING *`) as OrderRow[]
   return rows[0] ? toOrder(rows[0]) : undefined
 }
 

@@ -1,5 +1,7 @@
 /** Cliente server-side para a Evolution API. Não o importe em componentes client. */
 
+import { isValidPhone } from '@/lib/format'
+
 interface VoucherData {
   name: string
   phone: string
@@ -10,8 +12,9 @@ interface VoucherData {
 
 function toBrazilianWhatsAppNumber(phone: string): string {
   const digits = phone.replace(/\D/g, '')
-  if (!digits) throw new Error('Telefone do cliente ausente')
-  return digits.startsWith('55') ? digits : `55${digits}`
+  if (isValidPhone(digits)) return `55${digits}`
+  if (digits.startsWith('55') && isValidPhone(digits.slice(2))) return digits
+  throw new Error('WhatsApp inválido: informe um celular brasileiro completo com DDD')
 }
 
 function voucherText({ name, quantity, amount, txid }: VoucherData): string {
@@ -26,8 +29,9 @@ function voucherText({ name, quantity, amount, txid }: VoucherData): string {
     '----------------------------------', '*VOUCHER DE INGRESSO*', `Nome: ${name}`,
     `Ingresso${plural}: ${quantity}`, `Total pago: ${total}`, `Código: ${txid}`,
     '----------------------------------', '', '*Local:* Essence Restaurante e Eventos',
-    '*Data:* Sábado, 26 de Setembro de 2026', '',
+    '*Data:* Sábado, 26 de Setembro de 2026, 20H', '',
     'Apresente este voucher e um documento com foto para retirar sua pulseira de acesso.', '',
+    'A pulseira pode ser retirada no Essence de segunda à sábado, das 9H-13H, ou no dia do evento a partir das 19H:30M', '',
     'Nos vemos lá! Prost! 🍺',
   ].join('\n')
 }

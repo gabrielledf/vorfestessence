@@ -9,6 +9,7 @@ const labels: Record<OrderStatus, string> = {
   COMPROVANTE_ENVIADO: 'Aguardando confirmação',
   PAGO: 'Pagamento confirmado',
   VOUCHER_ENVIADO: 'Voucher enviado',
+  PULSEIRA_ENTREGUE: 'Pulseira entregue',
   CANCELADO: 'Cancelado',
 }
 
@@ -19,6 +20,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [confirming, setConfirming] = useState('')
+  const [delivering, setDelivering] = useState('')
 
   const loadOrders = async () => {
     setLoading(true)
@@ -62,6 +64,22 @@ export default function AdminPage() {
     router.replace('/')
   }
 
+  const deliverWristband = async (id: string) => {
+    if (!window.confirm('Confirmar que a pulseira deste pedido foi entregue?')) return
+    setDelivering(id)
+    setError('')
+    try {
+      const response = await fetch(`/api/orders/${id}/wristband`, { method: 'POST' })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error || 'Não foi possível registrar a entrega da pulseira.')
+      await loadOrders()
+    } catch (reason) {
+      setError((reason as Error).message)
+    } finally {
+      setDelivering('')
+    }
+  }
+
   const visibleOrders = useMemo(() => orders.filter((order) => filter === 'TODOS' || order.status === filter), [filter, orders])
 
   return (
@@ -73,18 +91,18 @@ export default function AdminPage() {
         </header>
 
         <div className="mt-7 flex flex-wrap gap-2">
-          {([['TODOS', 'Todos'], ['COMPROVANTE_ENVIADO', 'Aguardando'], ['PAGO', 'Pagos'], ['VOUCHER_ENVIADO', 'Voucher enviado']] as const).map(([value, label]) => (
+          {([['TODOS', 'Todos'], ['COMPROVANTE_ENVIADO', 'Aguardando'], ['PAGO', 'Pagos'], ['VOUCHER_ENVIADO', 'Voucher enviado'], ['PULSEIRA_ENTREGUE', 'Pulseira entregue']] as const).map(([value, label]) => (
             <button key={value} onClick={() => setFilter(value)} className={`rounded-full px-4 py-2 text-sm font-medium ${filter === value ? 'bg-primary text-primary-foreground' : 'border border-border bg-background text-foreground'}`}>{label}</button>
           ))}
         </div>
         {error && <p className="mt-5 rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">{error}</p>}
 
         <div className="mt-6 overflow-x-auto rounded-2xl border border-border bg-background">
-          <table className="w-full min-w-[820px] text-left text-sm">
-            <thead className="border-b border-border text-muted-foreground"><tr><th className="px-5 py-4 font-medium">Nome</th><th className="px-5 py-4 font-medium">WhatsApp</th><th className="px-5 py-4 font-medium">Qtde.</th><th className="px-5 py-4 font-medium">Valor</th><th className="px-5 py-4 font-medium">Status</th><th className="px-5 py-4 font-medium">Ação</th></tr></thead>
+          <table className="w-full min-w-[960px] text-left text-sm">
+            <thead className="border-b border-border text-muted-foreground"><tr><th className="px-5 py-4 font-medium">Nº do ticket</th><th className="px-5 py-4 font-medium">Nome</th><th className="px-5 py-4 font-medium">WhatsApp</th><th className="px-5 py-4 font-medium">Qtde.</th><th className="px-5 py-4 font-medium">Valor</th><th className="px-5 py-4 font-medium">Status</th><th className="px-5 py-4 font-medium">Ação</th></tr></thead>
             <tbody>
-              {loading ? <tr><td colSpan={6} className="px-5 py-8 text-center text-muted-foreground">Carregando pedidos...</td></tr> : visibleOrders.length === 0 ? <tr><td colSpan={6} className="px-5 py-8 text-center text-muted-foreground">Nenhum pedido nesta lista.</td></tr> : visibleOrders.map((order) => (
-                <tr key={order.id} className="border-b border-border last:border-0"><td className="px-5 py-4 font-medium text-foreground"><span className="block">{order.name}</span><span className="text-xs text-muted-foreground">{order.email}</span></td><td className="px-5 py-4 text-foreground">{order.phone}</td><td className="px-5 py-4 text-foreground">{order.quantity}</td><td className="px-5 py-4 text-foreground">{formatBRL(order.amount)}</td><td className="px-5 py-4"><span className="rounded-full bg-card px-3 py-1.5 text-xs font-medium text-foreground">{labels[order.status]}</span></td><td className="px-5 py-4">{order.status === 'COMPROVANTE_ENVIADO' || order.status === 'PAGO' ? <button onClick={() => confirmPayment(order.id)} disabled={confirming === order.id} className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground disabled:opacity-60">{confirming === order.id ? 'Enviando...' : order.status === 'PAGO' ? 'Reenviar voucher' : 'Confirmar pagamento'}</button> : <span className="text-xs text-muted-foreground">{order.status === 'VOUCHER_ENVIADO' ? 'Voucher enviado' : labels[order.status]}</span>}</td></tr>
+              {loading ? <tr><td colSpan={7} className="px-5 py-8 text-center text-muted-foreground">Carregando pedidos...</td></tr> : visibleOrders.length === 0 ? <tr><td colSpan={7} className="px-5 py-8 text-center text-muted-foreground">Nenhum pedido nesta lista.</td></tr> : visibleOrders.map((order) => (
+                <tr key={order.id} className="border-b border-border last:border-0"><td className="whitespace-nowrap px-5 py-4 font-mono text-xs font-semibold text-foreground">{order.voucherCode}</td><td className="px-5 py-4 font-medium text-foreground"><span className="block">{order.name}</span><span className="text-xs text-muted-foreground">{order.email}</span></td><td className="px-5 py-4 text-foreground">{order.phone}</td><td className="px-5 py-4 text-foreground">{order.quantity}</td><td className="px-5 py-4 text-foreground">{formatBRL(order.amount)}</td><td className="px-5 py-4"><span className="rounded-full bg-card px-3 py-1.5 text-xs font-medium text-foreground">{labels[order.status]}</span></td><td className="px-5 py-4">{order.status === 'COMPROVANTE_ENVIADO' || order.status === 'PAGO' ? <button onClick={() => confirmPayment(order.id)} disabled={confirming === order.id} className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground disabled:opacity-60">{confirming === order.id ? 'Enviando...' : order.status === 'PAGO' ? 'Reenviar voucher' : 'Confirmar pagamento'}</button> : order.status === 'VOUCHER_ENVIADO' ? <button onClick={() => deliverWristband(order.id)} disabled={delivering === order.id} className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground disabled:opacity-60">{delivering === order.id ? 'Registrando...' : 'Entregar pulseira'}</button> : <span className="text-xs text-muted-foreground">{labels[order.status]}</span>}</td></tr>
               ))}
             </tbody>
           </table>
