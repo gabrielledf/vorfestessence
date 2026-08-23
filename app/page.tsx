@@ -1,5 +1,6 @@
 import { Attractions } from '@/components/attractions'
 import { Checkout } from '@/components/checkout'
+import { EventPartners } from '@/components/event-partners'
 import { Hero } from '@/components/hero'
 import { InfoFaq } from '@/components/info-faq'
 import { SiteFooter } from '@/components/site-footer'
@@ -13,6 +14,7 @@ export default function Page() {
       <Attractions />
       <Checkout />
       <InfoFaq />
+      <EventPartners />
       <SiteFooter />
     </main>
   )

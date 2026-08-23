@@ -14,18 +14,18 @@ const STEPS = [
   {
     icon: ShieldCheck,
     title: '3. Retire a pulseira',
-    description: 'Apresente o voucher, antecipadamente em um dos pontos oficiais, ou na entrada do evento para trocar pela sua pulseira de acesso.',
+    description: 'Apresente o voucher, antecipadamente no Essence Restaurante, de seg - sáb, das 9h-13h, ou na entrada do evento para trocar pela sua pulseira de acesso.',
   },
 ]
 
 const FAQ = [
   {
     q: 'Como recebo meu ingresso?',
-    a: 'Após a confirmação do pagamento via PIX, você recebe automaticamente o voucher no número de WhatsApp informado no cadastro.',
+    a: 'Após a confirmação do pagamento via PIX, você recebe automaticamente o voucher no número de WhatsApp informado na compra.',
   },
   {
     q: 'Onde e quando retiro a pulseira?',
-    a: 'A pulseira pode ser retirada nos pontos oficiais ou na entrada do Essence no dia do evento, apresentando o voucher recebido no WhatsApp junto com um documento com foto. Pontos oficiais para retirada de pulseiras: Essence Restaurante, Santa Fé Restaurante, Agafarma Catedral e Hellen Choperia',
+    a: 'A pulseira pode ser retirada antecipadamente no Essence Restaurante, de seg - sáb, das 9h-13h ou na entrada do evento, apresentando o voucher recebido no WhatsApp junto com um documento com foto.',
   },
    {
     q: 'Posso comprar mais de um ingresso?',
@@ -37,7 +37,7 @@ const FAQ = [
   },
   {
     q: 'O que está incluso no ingresso?',
-    a: 'O acesso ao evento com todas as atrações: bandas, dj, decoração temática e ambiente completo da Oktoberfest. Open bar com água, refrigerante, chopp e espumantes. Open food: cucas artesanais e linguiça (self-service)',
+    a: 'O acesso ao evento com todas as atrações: bandas, DJ, decoração temática, copo para chopp/espumante e ambiente completo da Oktoberfest. Open bar incluso com espumante, chopp Hellen, água e refrigerante liberados. Open food de comidas típicas: cucas artesanais, linguiça e pretzels (self-service)',
   },
 ]
 

@@ -1,4 +1,4 @@
-import { Beer, Music, UtensilsCrossed, Wine, Sparkles, Shirt } from 'lucide-react'
+import { Beer, Gift, Music, UtensilsCrossed, Wine, Sparkles, Shirt } from 'lucide-react'
 
 const ATTRACTIONS = [
   {
@@ -25,7 +25,7 @@ const ATTRACTIONS = [
   {
     icon: Music,
     title: 'Músicas Típicas',
-    description: 'Bandas alemãs ao vivo com o repertório clássico da Oktoberfest.',
+    description: 'Banda alemã Feliz em Festa ao vivo com o repertório clássico da Oktoberfest, banda Pantukiffa Rockets e DJ Filipe Pachaly animando a festa.',
     image: '/banda-tipica.png',
     imageAlt: 'Banda típica alemã tocando ao vivo',
   },
@@ -42,6 +42,13 @@ const ATTRACTIONS = [
     description: 'Venha vestido a caráter e concorra a prêmios especiais.',
     image: '/traje.png',
     imageAlt: 'Concurso Trajes Típicos',
+  },
+  {
+    icon: Gift,
+    title: 'Brindes',
+    description: 'Cada ingresso dá direito a escolher entre um copo de chopp ou uma taça de espumante.',
+    image: '/brinde.png',
+    imageAlt: 'Ingresso dá direito a um brinde',
   },
 ]
 

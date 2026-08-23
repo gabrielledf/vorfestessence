@@ -28,6 +28,9 @@ export function SiteHeader() {
           <a href="#faq" className="text-sm text-muted-foreground transition-colors hover:text-primary">
             FAQ
           </a>
+          <a href="#parceiros" className="text-sm text-muted-foreground transition-colors hover:text-primary">
+            Parceiros
+          </a>
           <a href="/essence" className="text-sm text-muted-foreground transition-colors hover:text-primary">
             Área Essence
           </a>
@@ -60,6 +63,7 @@ export function SiteHeader() {
             <a href="#atracoes" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-3 text-sm text-foreground transition-colors hover:bg-card hover:text-primary">Atrações</a>
             <a href="#info" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-3 text-sm text-foreground transition-colors hover:bg-card hover:text-primary">Informações</a>
             <a href="#faq" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-3 text-sm text-foreground transition-colors hover:bg-card hover:text-primary">FAQ</a>
+            <a href="#parceiros" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-3 text-sm text-foreground transition-colors hover:bg-card hover:text-primary">Parceiros</a>
             <a href="/essence" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-3 text-sm text-foreground transition-colors hover:bg-card hover:text-primary">Área Essence</a>
           </div>
         </nav>

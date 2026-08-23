@@ -59,10 +59,11 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="border-t border-border py-4">
-        <p className="text-center text-xs text-muted-foreground">
-          {new Date().getFullYear()} {EVENT.venue}. Todos os direitos reservados.
-        </p>
+      <div className="border-t border-border px-4 py-4 text-center text-xs text-muted-foreground">
+        <p>{new Date().getFullYear()} {EVENT.venue}. </p>
+        <a href="mailto:athenatraining23@gmail.com" className="mt-1 inline-block transition-colors hover:text-primary">
+          Desenvolvido por Athena Training. Todos os direitos reservados.
+        </a>
       </div>
       <LocationModal open={mapOpen} onClose={() => setMapOpen(false)} />
     </footer>
