@@ -23,16 +23,19 @@ export function isValidAdminLogin(email: string, password: string) {
 
 export function createAdminSession() {
   const expiresAt = Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS
-  const value = `${ADMIN_EMAIL}.${expiresAt}`
-  return `${value}.${sign(value)}`
+  const expiration = String(expiresAt)
+  const value = `${ADMIN_EMAIL}.${expiration}`
+  return `${expiration}.${sign(value)}`
 }
 
 export function isValidAdminSession(token?: string) {
   if (!token) return false
-  const [email, expiration, signature] = token.split('.')
-  if (email !== ADMIN_EMAIL || !expiration || !signature) return false
+  const parts = token.split('.')
+  if (parts.length !== 2) return false
+  const [expiration, signature] = parts
+  if (!expiration || !signature) return false
   if (Number(expiration) < Math.floor(Date.now() / 1000)) return false
-  const value = `${email}.${expiration}`
+  const value = `${ADMIN_EMAIL}.${expiration}`
   const expected = sign(value)
   return signature.length === expected.length && timingSafeEqual(Buffer.from(signature), Buffer.from(expected))
 }
