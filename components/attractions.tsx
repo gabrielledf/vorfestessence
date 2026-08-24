@@ -32,7 +32,7 @@ const ATTRACTIONS = [
   {
     icon: Sparkles,
     title: 'Decoração Temática',
-    description: 'Decoração temática alemã para suas fotos ficarem no clima da festa',
+    description: 'Decoração temática alemã para suas fotos ficarem no clima da festa.',
     image: '/decoracao.png',
     imageAlt: 'Decoração temática alemã',
   },
@@ -46,7 +46,7 @@ const ATTRACTIONS = [
   {
     icon: Gift,
     title: 'Brindes',
-    description: 'Cada ingresso dá direito a escolher entre um copo de chopp ou uma taça de espumante.',
+    description: 'Cada ingresso dá direito a escolher entre um copo de chopp ou uma taça de espumante, entregue na entrada do evento.',
     image: '/brinde.png',
     imageAlt: 'Ingresso dá direito a um brinde',
   },
