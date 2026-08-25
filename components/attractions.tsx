@@ -38,8 +38,8 @@ const ATTRACTIONS = [
   },
   {
     icon: Shirt,
-    title: 'Concurso Trajes Típicos',
-    description: 'Venha vestido a caráter e concorra a prêmios especiais.',
+    title: 'Traje Típico Premiado',
+    description: 'Quem vier com traje típico concorre a prêmios especiais: cesta de produtos Agafarma, kit com 3 espumantes Brut, canecão Hellen e almoço cortesia no Essence com acompanhante.',
     image: '/traje.png',
     imageAlt: 'Concurso Trajes Típicos',
   },
