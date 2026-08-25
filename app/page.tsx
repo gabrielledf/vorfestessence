@@ -11,10 +11,10 @@ export default function Page() {
     <main className="min-h-screen bg-background">
       <SiteHeader />
       <Hero />
+      <EventPartners />
       <Attractions />
       <Checkout />
       <InfoFaq />
-      <EventPartners />
       <SiteFooter />
     </main>
   )

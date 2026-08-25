@@ -19,6 +19,9 @@ export function SiteHeader() {
         </a>
 
         <nav className="hidden items-center gap-8 md:flex">
+          <a href="#parceiros" className="text-sm text-muted-foreground transition-colors hover:text-primary">
+            Parceiros
+          </a>
           <a href="#atracoes" className="text-sm text-muted-foreground transition-colors hover:text-primary">
             Atrações
           </a>
@@ -27,9 +30,6 @@ export function SiteHeader() {
           </a>
           <a href="#faq" className="text-sm text-muted-foreground transition-colors hover:text-primary">
             FAQ
-          </a>
-          <a href="#parceiros" className="text-sm text-muted-foreground transition-colors hover:text-primary">
-            Parceiros
           </a>
           <a href="/essence" className="text-sm text-muted-foreground transition-colors hover:text-primary">
             Área Essence
@@ -60,10 +60,10 @@ export function SiteHeader() {
       {menuOpen && (
         <nav id="mobile-navigation" className="border-t border-border/60 px-4 py-3 md:hidden" aria-label="Navegação principal">
           <div className="mx-auto flex max-w-6xl flex-col">
+            <a href="#parceiros" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-3 text-sm text-foreground transition-colors hover:bg-card hover:text-primary">Parceiros</a>
             <a href="#atracoes" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-3 text-sm text-foreground transition-colors hover:bg-card hover:text-primary">Atrações</a>
             <a href="#info" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-3 text-sm text-foreground transition-colors hover:bg-card hover:text-primary">Informações</a>
             <a href="#faq" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-3 text-sm text-foreground transition-colors hover:bg-card hover:text-primary">FAQ</a>
-            <a href="#parceiros" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-3 text-sm text-foreground transition-colors hover:bg-card hover:text-primary">Parceiros</a>
             <a href="/essence" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-3 text-sm text-foreground transition-colors hover:bg-card hover:text-primary">Área Essence</a>
           </div>
         </nav>
