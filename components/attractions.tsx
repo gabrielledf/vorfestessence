@@ -36,13 +36,13 @@ const ATTRACTIONS = [
     image: '/decoracao.png',
     imageAlt: 'Decoração temática alemã',
   },
-  {
+  /*{
     icon: Shirt,
     title: 'Traje Típico Premiado',
     description: 'Quem vier com traje típico concorre a prêmios especiais: cesta de produtos Agafarma, kit com 3 espumantes Brut, canecão Hellen e almoço cortesia no Essence com acompanhante.',
     image: '/traje.png',
     imageAlt: 'Concurso Trajes Típicos',
-  },
+  },*/
   {
     icon: Gift,
     title: 'Brindes',
